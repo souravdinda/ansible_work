@@ -1,0 +1,18 @@
+---
+# tasks file for myapache
+
+- name: "Install haproxy  Package"
+  package:
+          name: "{{ software_name }}"
+- name: "Configuration"
+  template:
+          dest: "/etc/haproxy/haproxy.cfg"
+          src: "haproxy.cfg"
+- name : " selinux disable "
+  command : "setenforce 0"
+- name: "Start service"
+  service:
+          name: "{{ software_name }}"
+          state: started
+
+

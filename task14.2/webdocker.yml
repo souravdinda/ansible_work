@@ -1,0 +1,13 @@
+- name: "configuring container {{ cont_name }}"
+  hosts: docker
+  tasks:
+          - name: installing httpd service...........
+            package:
+                    name: httpd                 
+                    state: present
+          - name: "creating the html file"
+            copy:
+                content: "hello it works "
+                dest: "/var/www/html/index.html"
+          - name: starting httpd service
+            command: /usr/sbin/httpd

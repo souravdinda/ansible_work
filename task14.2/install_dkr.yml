@@ -1,0 +1,69 @@
+- hosts: localhost
+  ignore_errors: no
+  become: true
+  vars_prompt:
+
+  - name: cont_name
+    prompt: "enter container name"
+    private: no
+
+  tasks:
+  - name: Creation of yum repo in cloud
+    yum_repository:
+      name: docker
+      baseurl: https://download.docker.com/linux/centos/7/x86_64/stable/
+      description : My docker repo
+      gpgcheck: 0
+  - name: Installation of docker in managed node
+    package:
+      name: "docker-ce-18.09.1-3.el7.x86_64"
+      state: present
+  - name: Starting docker  and enable
+    service:
+      name: "docker"
+      state: started
+      enabled: yes
+  - name: Installation of required packages by docker
+    command: "pip3 install docker"
+
+  - name: stopping selinux
+    selinux:
+            policy: targeted
+            state: permissive
+
+  - name: pulling docker image ....................
+    docker_image:
+          name: "mohitjangir/sshcentos:14.2"
+          source: pull
+
+  - name: launching a container
+    docker_container:
+          name: "{{ cont_name }}"
+          image: "mohitjangir/sshcentos:14.2"
+          interactive: no
+          detach: yes
+          tty: no
+
+  - name: "retrieving IP of {{ cont_name }} container"
+    docker_container_info:
+            name: "{{ cont_name }}"
+    register: dinfo
+
+  - debug:
+            var: dinfo.container.NetworkSettings.IPAddress
+  - name: updating ansible inventory  with new docker info.......
+    blockinfile:
+            dest: "/ip.txt"
+            block: |
+                    [docker]
+                    {{ dinfo['container']['NetworkSettings']['IPAddress'] }} ansible_user=root ansible_ssh_pass=root ansible_connection=ssh
+            marker: ""
+
+
+  handlers:
+  - name: docker
+    yum:
+            name: docker-ce
+            state: present
+            allow_downgrade: yes
+            skip_broken: yes

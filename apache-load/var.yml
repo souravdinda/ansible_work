@@ -1,0 +1,3 @@
+lb_software_name: "haproxy"
+port: 8080
+wb_software_name: "httpd"

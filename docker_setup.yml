@@ -1,0 +1,23 @@
+- hosts: all
+  tasks:
+  - name: create repo
+    yum_repository:
+         name: docker 
+         baseurl:  https://download.docker.com/linux/centos/7/x86_64/stable/
+         gpgcheck:  0
+         description: my docker repo
+  - name: install docker
+    package:
+            name: "docker-ce-18.09.1-3.e17.x86_64"
+            state: present
+  - name: starting docker services
+    service:
+            name: "docker"
+            state: started
+            enabled: yes
+  - name: installing docker sdk for python3
+    command: pip3 install docker
+  - name: Pulling httpd image from docker repo
+    docker_image:
+      name: httpd
+      source: pull    

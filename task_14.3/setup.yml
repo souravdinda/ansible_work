@@ -1,0 +1,16 @@
+- hosts: web 
+  vars_files:
+    -  vars/{{ ansible_facts['distribution'] }}.yml
+  tasks:
+    - name: "Installing Software"
+      package:
+              name: "{{ software_name }}"
+    
+    - name: "Deploying WebPages"
+      copy:
+              src: files/{{ ansible_facts['distribution'] }}.html
+              dest: "/var/www/html"
+    - name: "Starting Services"
+      service:
+              name: "{{ software_name }}"
+              state: started

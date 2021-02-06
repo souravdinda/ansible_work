@@ -1,0 +1,21 @@
+---
+# tasks file for webserver
+
+- name: "Install Packages"
+  package:
+          name: "{{ software }}"
+          state: present
+
+- name : " php install "
+  package :
+          name : "php"
+          state : present
+
+- name: "Copy Webpages"
+  template:
+          dest: /var/www/html/
+          src: my.php
+- name: "Start Web Service"
+  service:
+          name: '{{ service }}'
+          state: started

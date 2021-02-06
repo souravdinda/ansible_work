@@ -1,0 +1,35 @@
+- hosts: localhost
+  tasks: 
+         - name: "Launching Proxy Server"
+           ec2:
+                 region: ap-south-1
+                 aws_access_key: 'AKIAQ6QNKOLBGWGSAAV2'
+                 aws_secret_key: '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' 
+                 vpc_subnet_id: subnet-d5060fbd
+                 count: 1
+                 state: present
+                 instance_type: t2.micro
+                 key_name: cse2
+                 assign_public_ip: yes
+                 group_id: sg-0964e6446e615fba4
+                 image: ami-0a9d27a9f4f5c0efc
+                 instance_tags: 
+                     Name: 'Haproxy'
+           
+                  
+         - name: "Launching WebServer"
+           ec2:
+                 region: ap-south-1
+                 aws_access_key: 'AKIAQ6QNKOLBGWGSAAV2'
+                 aws_secret_key: '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'
+                 vpc_subnet_id: subnet-d5060fbd
+                 count: 2
+                 state: present
+                 instance_type: t2.micro
+                 key_name: cse2
+                 assign_public_ip: yes
+                 group_id: sg-0964e6446e615fba4
+                 image: ami-0a9d27a9f4f5c0efc
+                 instance_tags:
+                     Name: 'WebServer'
+                
