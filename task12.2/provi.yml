@@ -1,35 +1,37 @@
 - hosts: localhost
+  vars_files:
+  - mysecret.yml
   tasks: 
-         - name: "Launching Proxy Server"
+         - name: "Launching k8s_master"
            ec2:
                  region: ap-south-1
-                 aws_access_key: 'AKIAQ6QNKOLBGWGSAAV2'
-                 aws_secret_key: '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' 
-                 vpc_subnet_id: subnet-d5060fbd
+                 aws_access_key: "{{ access_key }}"
+                 aws_secret_key: "{{ secret_key }}"
+                 vpc_subnet_id: "{{ subnet_id }}"
                  count: 1
                  state: present
                  instance_type: t2.micro
                  key_name: cse2
                  assign_public_ip: yes
-                 group_id: sg-0964e6446e615fba4
-                 image: ami-0a9d27a9f4f5c0efc
+                 group_id: "{{ sg }}"
+                 image: "{{ ami }}"
                  instance_tags: 
-                     Name: 'Haproxy'
+                     Name: 'k8s_master'
            
                   
-         - name: "Launching WebServer"
+         - name: "Launching k8s_worker"
            ec2:
                  region: ap-south-1
-                 aws_access_key: 'AKIAQ6QNKOLBGWGSAAV2'
-                 aws_secret_key: '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'
-                 vpc_subnet_id: subnet-d5060fbd
-                 count: 2
+                 aws_access_key: "{{ access_key }}"
+                 aws_secret_key: "{{ secret_key }}"
+                 vpc_subnet_id: "{{ subnet_id }}"
+                 count: 3
                  state: present
                  instance_type: t2.micro
                  key_name: cse2
                  assign_public_ip: yes
-                 group_id: sg-0964e6446e615fba4
-                 image: ami-0a9d27a9f4f5c0efc
+                 group_id: "{{ sg }}"
+                 image: "{{ ami }}"
                  instance_tags:
-                     Name: 'WebServer'
+                     Name: 'k8s_worker'
                 

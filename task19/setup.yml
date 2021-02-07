@@ -1,7 +1,7 @@
-- hosts: k_m
+- hosts: tag_Name_k8s_master
   roles:
   - role: k8s_master
 
-- hosts: k_w
+- hosts: tag_Name_k8s_worker
   roles:
   - role: k8s_worker_node
