@@ -49,7 +49,7 @@
   shell: "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
 - name: "copying token to slave"
   copy:
-          src: /ansible_file/task19/slave_token.sh
+          src: /slave_token.sh
           dest: /root
           mode: 0777
 - name: "running token file"

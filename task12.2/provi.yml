@@ -1,6 +1,7 @@
 - hosts: localhost
   vars_files:
   - mysecret.yml
+  - /key.yml
   tasks: 
          - name: "Launching k8s_master"
            ec2:
