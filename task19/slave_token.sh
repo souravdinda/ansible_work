@@ -1,1 +1,0 @@
-kubeadm join 172.31.39.128:6443 --token b2qcuq.ruhmbofi401vjwzg     --discovery-token-ca-cert-hash sha256:fc1c025655379b49dd89492cf7a4b7fef6300802f0500a85d3f6793cda05d72a 
