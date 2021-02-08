@@ -1,7 +1,23 @@
 - hosts: tag_Name_k8s_master
   roles:
   - role: k8s_master
-
 - hosts: tag_Name_k8s_worker
   roles:
   - role: k8s_worker_node
+- hosts: tag_Name_k8s_master
+  tasks:
+  - name: "wait 30 sec"
+    pause: 
+       seconds: 30
+- hosts: tag_Name_k8s_master
+  roles:
+  - role : deployment
+- hosts: tag_Name_k8s_master
+  tasks:
+  - name: "getting svc port"
+    command: "kubectl get svc"
+    register: x
+  - name: "printing svc details"
+    debug:
+       var: x.stdout
+
