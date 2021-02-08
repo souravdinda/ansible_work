@@ -1,0 +1,6 @@
+- name : " creating deployment"
+  command : "kubectl create deploy myd --image=vimal13/apache-webserver-php"
+- name: "scale out"
+  command : "kubectl scale deploy myd --replicas=4"
+- name : "expose deployment"
+  command : "kubectl expose deploy myd --port=80 --type=NodePort"

@@ -54,8 +54,7 @@
   shell: "echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables"
 
 - name: "Initializing Master"
-  command: "kubeadm init --pod-network-cidr=10.240.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
-  ignore_errors: yes
+  command: "kubeadm init --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU --ignore-preflight-errors=Mem"
 
 - name: "setting master as clinet"
   command: mkdir -p $HOME/.kube
