@@ -1,0 +1,26 @@
+---
+# tasks file for wordpress_mysql
+
+- name: "pulling mysql image"
+  shell: "kubectl run mydb --image=mysql:5.7 --env=MYSQL_ROOT_PASSWORD=sourav --env=MYSQL_DATABASE=wpdb --env=MYSQL_USER=sourav --env=MYSQL_PASSWORD=sourav"
+  register: x
+
+- name: "pulling wordpress image"
+  shell: "kubectl run mywp --image=wordpress:5.1.1-php7.3-apache"
+  register: y
+
+- name: "exposing pod to outside world"
+  shell: "kubectl expose pod mywp --port=80 --type=NodePort"
+  register: p
+
+- name: "fetching database private ip"
+  shell: "kubectl get pod mydb -o wide"
+  register: z
+
+- name: "database ip"
+  debug:
+      var: z.stdout
+
+- name: " fetching port of wp"
+  debug:
+      var: p.stdout
