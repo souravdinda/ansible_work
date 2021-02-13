@@ -96,4 +96,13 @@
             - "kubeadm init phase certs all --apiserver-advertise-address=0.0.0.0 --apiserver-cert-extra-sans={{ public_ip }}"
             - "docker rm -f `docker ps -q -f 'name=k8s_kube-apiserver*'`"
             - "systemctl restart kubelet"
-
+- hosts: tag_Name_k8s_master
+  vars_files:
+          var.yml
+  tasks:
+  - name: "namespace created"
+    shell: "kubectl create ns {{ ns_name }}"
+  - name: "role create"
+    shell: "kubectl create role {{ role_name }}  --verb=* --resource=* --namespace={{ ns_name }}"
+  - name: "rolebinding create"
+    shell: "kubectl create rolebinding {{rolebinding_name }}  --role={{ role_name }} -n {{ ns_name }} --user={{user_name }}"
