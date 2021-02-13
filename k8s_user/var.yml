@@ -1,0 +1,31 @@
+# client workstation localtion 
+
+client_workstation: "/k8sws"
+
+# and private key , csr file name
+
+key_name: "sourav.key"
+csr_name: "sourav.csr"
+
+# csr file details
+
+country_name: "in"
+organ_name: "arth"
+email: "souravdindacse2@gmail.com"
+common_name: "sourav"
+state: "wb"
+locality: "haldia"
+
+# certificate details
+
+crt_file: "sourav.crt"
+
+# config file details
+
+cluster_name: "awscluster"
+server_detail: "https://13.127.73.83:6443"
+config_file: "sourav.kubeconfig"
+credentials_name: "sourav"
+context_name: "sourav@awscluster"
+user_name: "sourav"
+current_context_name: "sourav@awscluster"

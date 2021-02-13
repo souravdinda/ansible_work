@@ -1,0 +1,75 @@
+- hosts: tag_Name_k8s_client
+  tasks:
+  - name: "create folder for workstation"
+    file:
+       path: /k8sws
+       state: directory
+  - name: "generating private key"
+    shell: "openssl genrsa -out /k8sws/sourav.key 1024"
+  - name: "geneating csr file"
+    openssl_csr:
+         path: /k8sws/sourav1.csr
+         privatekey_path: //k8sws/sourav.key
+         country_name: FR
+         organization_name: Ansible
+         email_address: jdoe@ansible.com
+         common_name: www.ansible.com
+         state_or_province_name: wb
+         locality_name: haldia
+  - name: "csr file copy to local"
+    fetch:
+            src: "/k8sws/sourav1.csr"
+            dest: "/sourav1.csr"
+            flat: true
+- hosts: tag_Name_k8s_master
+  tasks:
+  - name: "copy to master"
+    copy:
+        src: "/sourav1.csr"
+        dest: "/etc/kubernetes/pki/sourav1.csr"
+  - name: "certificate singed"
+    shell: "openssl x509 -req -in /etc/kubernetes/pki/sourav1.csr -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/sourav1.crt"
+  - name: "copy ca and crt file to local"
+    fetch:
+            src: "{{ item }}"
+            dest: "/"
+            flat: true
+    loop:
+      - /etc/kubernetes/pki/sourav1.crt
+      - /etc/kubernetes/pki/ca.crt
+- hosts: tag_Name_k8s_client
+  tasks:
+  - name: "copy ca and crt file to local"
+    copy:
+            src: "{{ item }}"
+            dest: "/k8sws/"
+    loop:
+      - /sourav1.crt
+      - /ca.crt
+
+  - name: "copy repo filw to client"
+    copy:
+            src: "kubernetes.repo"
+            dest: "/etc/yum.repos.d/kubernetes.repo"
+  - name: "install kubectl"
+    package:
+           name: "kubectl"
+           state: present
+  - name: "kubeconfig file create"
+    shell: "kubectl config --kubeconfig /k8sws/sourav.kubeconfig set-cluster awscluster --server https://13.127.73.83:6443 --certificate-authority=/k8sws/ca.crt"
+
+  - name: " test"
+    shell: "kubectl config --kubeconfig /k8sws/sourav.kubeconfig set-credentials sourav --client-certificate /k8sws/sourav1.crt --client-key /k8sws/sourav.key"
+  - name: " test"
+    shell: "kubectl config set-context sourav@awscluster1 --user=sourav --cluster awscluster --kubeconfig /k8sws/sourav.kubeconfig"
+
+  - name: " test"
+    shell: "kubectl config use-context sourav@awscluster1 --kubeconfig /k8sws/sourav.kubeconfig"
+
+
+
+
+end ................
+
+
+

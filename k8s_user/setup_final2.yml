@@ -1,0 +1,73 @@
+- hosts: tag_Name_k8s_client
+  vars_files:
+          var.yml
+  tasks:
+  - name: "create folder for workstation"
+    file:
+       path: "{{ client_workstation }}"
+       state: directory
+  - name: "generating private key"
+    shell: "openssl genrsa -out {{ client_workstation }}/{{ key_name }}  1024"
+  - name: "geneating csr file"
+    openssl_csr:
+         path: "{{ client_workstation }}/{{ csr_name }}"
+         privatekey_path: "{{ client_workstation }}/{{ key_name }}"
+         country_name: "{{ country_name }}"
+         organization_name: "{{ organ_name }}"
+         email_address: "{{ email }}"
+         common_name: "{{ common_name }}"
+         state_or_province_name: "{{ state }}"
+         locality_name: "{{ locality }}"
+  - name: "csr file copy to local"
+    fetch:
+            src: "{{ client_workstation }}/{{ csr_name }}"
+            dest: "/{{ csr_name }}"
+            flat: true
+- hosts: tag_Name_k8s_master
+  vars_files:
+          var.yml
+  tasks:
+  - name: "copy to master"
+    template:
+        src: "/{{ csr_name }}"
+        dest: "/etc/kubernetes/pki/{{ csr_name }}"
+  - name: "certificate singed"
+    shell: "openssl x509 -req -in /etc/kubernetes/pki/{{ csr_name }} -CA /etc/kubernetes/pki/ca.crt -CAkey /etc/kubernetes/pki/ca.key -CAcreateserial -out /etc/kubernetes/pki/{{ crt_file }}"
+  - name: "copy ca and crt file to local"
+    fetch:
+            src: "{{ item }}"
+            dest: "/"
+            flat: true
+    loop:
+      - /etc/kubernetes/pki/{{ crt_file }}
+      - /etc/kubernetes/pki/ca.crt
+- hosts: tag_Name_k8s_client
+  vars_files:
+          var.yml
+  tasks:
+  - name: "copy ca and crt file to local"
+    copy:
+            src: "{{ item }}"
+            dest: "{{ client_workstation }}/"
+    loop:
+      - /{{ crt_file }}
+      - /ca.crt
+
+  - name: "copy repo file to client"
+    copy:
+            src: "kubernetes.repo"
+            dest: "/etc/yum.repos.d/kubernetes.repo"
+  - name: "install kubectl"
+    package:
+           name: "kubectl"
+           state: present
+  - name: "kubeconfig file create"
+    shell: "kubectl config --kubeconfig {{ client_workstation }}/{{ config_file }} set-cluster {{ cluster_name }} --server {{ server_detail }}  --certificate-authority={{ client_workstation }}/ca.crt"
+
+  - name: " credential setup"
+    shell: "kubectl config --kubeconfig {{ client_workstation }}/{{ config_file }} set-credentials {{ credentials_name }} --client-certificate {{ client_workstation }}/{{ crt_file }} --client-key {{ client_workstation }}/{{ key_name }}"
+  - name: " context setup"
+    shell: "kubectl config set-context {{ context_name }} --user={{ user_name }} --cluster {{ cluster_name }} --kubeconfig {{ client_workstation }}/{{ config_file }}"
+
+  - name: " make the context default"
+    shell: "kubectl config use-context {{ current_context_name }}  --kubeconfig {{ client_workstation }}/{{ config_file }}"

@@ -1,0 +1,4 @@
+- hosts: tag_Name_k8s_client
+  tasks:
+  - name: " test"
+    shell: "kubectl config use-context sourav@awscluster1 --kubeconfig /k8sws/sourav.kubeconfig"
