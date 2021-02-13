@@ -1,3 +1,9 @@
+- hosts: tag_Name_k8s_master
+  roles:
+  - role: k8s_master
+- hosts: tag_Name_k8s_worker
+  roles:
+  - role: k8s_worker_node
 - hosts: tag_Name_k8s_client
   vars_files:
           var.yml
@@ -44,6 +50,10 @@
 - hosts: tag_Name_k8s_client
   vars_files:
           var.yml
+  vars_prompt:
+          name: public_ip
+          prompt: "enter public ip of master node"
+          private: no
   tasks:
   - name: "copy ca and crt file to local"
     copy:
@@ -62,7 +72,7 @@
            name: "kubectl"
            state: present
   - name: "kubeconfig file create"
-    shell: "kubectl config --kubeconfig {{ client_workstation }}/{{ config_file }} set-cluster {{ cluster_name }} --server {{ server_detail }}  --certificate-authority={{ client_workstation }}/ca.crt"
+    shell: "kubectl config --kubeconfig {{ client_workstation }}/{{ config_file }} set-cluster {{ cluster_name }} --server https://{{ public_ip }}:6443  --certificate-authority={{ client_workstation }}/ca.crt"
 
   - name: " credential setup"
     shell: "kubectl config --kubeconfig {{ client_workstation }}/{{ config_file }} set-credentials {{ credentials_name }} --client-certificate {{ client_workstation }}/{{ crt_file }} --client-key {{ client_workstation }}/{{ key_name }}"

@@ -1,4 +1,8 @@
-- hosts: tag_Name_k8s_client
+- hosts: localhost
+  vars_prompt:
+       name: username
+       prompt: What is your username?
+       private: no
   tasks:
-  - name: " test"
-    shell: "kubectl config use-context sourav@awscluster1 --kubeconfig /k8sws/sourav.kubeconfig"
+  - debug:
+          msg: "{{ username }}"

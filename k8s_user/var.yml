@@ -29,3 +29,13 @@ credentials_name: "sourav"
 context_name: "sourav@awscluster"
 user_name: "sourav"
 current_context_name: "sourav@awscluster"
+
+# role rolebinding details 
+
+ns_name: "tech"
+role_name: "sourav-tech"
+rolebinding_name: "sourav-tech-rolebinding"
+
+
+
+
