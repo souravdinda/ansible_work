@@ -11,16 +11,11 @@
 
 - name: "exposing pod to outside world"
   shell: "kubectl expose pod mywp --port=80 --type=NodePort"
-  register: p
 
-- name: "fetching database private ip"
-  shell: "kubectl get pod mydb -o wide"
+- name: "fetching port"
+  shell: "kubectl get svc"
   register: z
 
-- name: "database ip"
+- name: "note down port no"
   debug:
       var: z.stdout
-
-- name: " fetching port of wp"
-  debug:
-      var: p.stdout
