@@ -1,0 +1,36 @@
+- hosts: tag_Name_k8s_client
+  vars_files:
+          var.yml
+  tasks:
+  - name: "pulling mysql image"
+    shell: "kubectl run mydb --image=mysql:5.7 --env=MYSQL_ROOT_PASSWORD=sourav --env=MYSQL_DATABASE=wpdb --env=MYSQL_USER=sourav --env=MYSQL_PASSWORD=sourav   --kubeconfig {{ client_workstation }}/{{ config_file }}  -n {{ ns_name }}"
+    register: x
+
+  - name: "pulling wordpress image"
+    shell: "kubectl run mywp --image=wordpress:5.1.1-php7.3-apache --kubeconfig {{ client_workstation }}/{{ config_file }}  -n {{ ns_name }}"
+    register: y
+
+  - name: "wait 15 sec"
+    pause:
+       seconds: 15
+
+  - name: "exposing pod to outside world"
+    shell: "kubectl expose pod mywp --port=80 --type=NodePort  --kubeconfig {{ client_workstation }}/{{ config_file }}  -n {{ ns_name }}"
+
+  - name: "fetching port"
+    shell: "kubectl get svc  --kubeconfig {{ client_workstation }}/{{ config_file }}  -n {{ ns_name }}"
+    register: z
+
+  - name: "db details"
+    shell: "kubectl get pods -o wide  --kubeconfig {{ client_workstation }}/{{ config_file }}  -n {{ ns_name }}"
+    register: b
+
+  - name: "note down port no"
+    debug:
+      var: z.stdout
+
+  - name: "note down database ip "
+    debug:
+      var: b.stdout
+
+

@@ -3,9 +3,14 @@
   - package:
             name: "httpd"
             state: present
+
+  - shell: "{{ item }}"
+    loop:
+            - "sudo mkfs.ext4 /dev/xvdh"
+            - "sudo mount /dev/xvdh /var/www/html/"
   - copy:
             src: "index.html"
-            dest: "/web"
+            dest: "/var/www/html"
   - service:
             name: "httpd"
             state: started

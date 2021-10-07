@@ -1,0 +1,56 @@
+- hosts: client
+  vars_files:
+      - datanode_var.yml
+  vars_prompt:
+
+    - name: ip
+      prompt: " enter namenode ip : "
+      private: no
+
+    - name: ip_jt
+      prompt: " enter jobtrackernode ip : "
+      private: no
+
+  tasks:
+  - name: "Copying the jdk  File"
+    copy:
+       src: "{{ jdk_software }}"
+       dest: "/"
+  - name: "Copying the hadoop File"
+    copy:
+       src: "{{ hadoop_software }}"
+       dest: "/"
+  - name: "Installing Jdk"
+    shell: "rpm -ivh {{ jdk_software }}"
+    register: Java
+    ignore_errors: yes
+  - name: "Java Installation"
+    debug:
+        var: Java.stdout
+  - name: "Installing Hadoop"
+    shell: "rpm -ivh {{ hadoop_software }}  --force"
+    register: Hadoop
+    ignore_errors: yes
+  - name: "Hadop Installation"
+    debug:
+        var: Hadoop.stdout
+  - name: "updating core_site.xml file "
+    blockinfile:
+        path: /etc/hadoop/core-site.xml
+        insertafter: "<configuration>"
+        content: |
+           <property>
+           <name>fs.default.name</name>
+           <value>hdfs://{{ ip }}:9001</value>
+           </property>
+  - name: "updating mapred_site.xml file "
+    blockinfile:
+        path: /etc/hadoop/mapred-site.xml
+        insertafter: "<configuration>"
+        content: |
+           <property>
+           <name>mapred.job.tracker</name>
+           <value>{{ ip_jt }}:9002</value>
+           </property>
+
+ 

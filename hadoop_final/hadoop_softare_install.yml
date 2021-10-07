@@ -1,0 +1,27 @@
+- hosts: hadoop
+  vars_files:
+      - namenode_var.yml
+  tasks:
+  - name: "Copying the jdk  File"
+    copy:
+       src: "{{ jdk_software }}"
+       dest: "/"
+  - name: "Copying the hadoop File"
+    copy:
+       src: "{{ hadoop_software }}"
+       dest: "/"
+  - name: "Installing Jdk"
+    shell: "rpm -ivh {{ jdk_software }}"
+    register: Java
+    ignore_errors: yes
+  - name: "Java Installation"
+    debug:
+        var: Java.stdout
+  - name: "Installing Hadoop"
+    shell: "rpm -ivh {{ hadoop_software }}  --force"
+    register: Hadoop
+    ignore_errors: yes
+  - name: "Hadop Installation"
+    debug:
+        var: Hadoop.stdout
+

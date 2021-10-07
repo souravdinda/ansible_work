@@ -9,6 +9,10 @@
   shell: "kubectl run mywp --image=wordpress:5.1.1-php7.3-apache"
   register: y
 
+- name: "wait 15 sec"
+  pause:
+       seconds: 15
+
 - name: "exposing pod to outside world"
   shell: "kubectl expose pod mywp --port=80 --type=NodePort"
 
@@ -16,6 +20,14 @@
   shell: "kubectl get svc"
   register: z
 
+- name: "db details"
+  shell: "kubectl get pods -o wide"
+  register: b
+
 - name: "note down port no"
   debug:
       var: z.stdout
+
+- name: "note down database ip "
+  debug:
+      var: b.stdout

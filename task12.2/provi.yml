@@ -51,3 +51,7 @@
                  image: "{{ ami }}"
                  instance_tags:
                      Name: 'k8s_client'        
+
+
+
+
